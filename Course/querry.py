@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from typing import Optional
 
 app = FastAPI()
 
@@ -8,7 +9,7 @@ def get_homepage():
 
 #use of parameters
 @app.get("/blog")
-def published_blog(limit: int = 10, published: bool = True):
+def published_blog(limit: int = 10, published: bool = True , sort : Optional[str] = None):
     if published:
         return {
             "blog type": "published",
