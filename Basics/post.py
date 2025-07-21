@@ -26,3 +26,4 @@ def create_blog(blog: Blog):
             "Blog published": blog.published,
         }
     }
+    
