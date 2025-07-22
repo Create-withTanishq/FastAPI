@@ -27,6 +27,10 @@ We want to build a **One-to-Many** relationship:
 ## 👇 Model Definitions
 
 ```python
+# importing relationship
+from sqlalchemy.orm import relationship
+
+
 class Blog(Base):
     __tablename__ = "Blogs"
     
