@@ -19,9 +19,9 @@ def get_db():
     
 
 @app.post("/blog" ,status_code= status.HTTP_201_CREATED, tags= ["Blog"])  #reponse code should 201 for created
-def create_blog(request : schemas.blog , db : Session = Depends(get_db) ):
+def create_blog(request : schemas.blogBase , db : Session = Depends(get_db) ):
     
-    new_blog = models.Blog(title = request.title , body = request.body)
+    new_blog = models.Blog(title = request.title , body = request.body ,user_id = 1) #for now harcoding user id
     
     #add it to the session
     db.add(new_blog)
@@ -35,6 +35,7 @@ def create_blog(request : schemas.blog , db : Session = Depends(get_db) ):
     return {
         "message" : "creating",
         "blog_id" : new_blog.id,
+        "user_id" : new_blog.user_id,
         "title" : new_blog.title,
         "body" : new_blog.body,
     }
@@ -48,7 +49,7 @@ def get_allBlogs(db : Session = Depends(get_db) ):
     
     
 
-@app.get("/blog/{id}",status_code= status.HTTP_200_OK,  tags= ["Blog"])
+@app.get("/blog/{id}",response_model= schemas.showBlogs ,status_code= status.HTTP_200_OK,  tags= ["Blog"])
 def get_blog(id : int , db : Session = Depends(get_db)):
     blog = db.query(models.Blog).filter(models.Blog.id == id).first()
     
@@ -76,7 +77,7 @@ def delete_blog(id : int  , db : Session = Depends(get_db)):
 
 # updating ablog with particular id
 @app.put("/blog/{id}" ,status_code= status.HTTP_202_ACCEPTED,  tags= ["Blog"])
-def update_blog(request : schemas.blog , id : int , db : Session = Depends(get_db),):
+def update_blog(request : schemas.blogBase , id : int , db : Session = Depends(get_db),):
     update_blog = db.query(models.Blog).filter(models.Blog.id == id).first()
     
     if not update_blog:
