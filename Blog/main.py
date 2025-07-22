@@ -36,7 +36,17 @@ def create_blog(request : schemas.blog , db : Session = Depends(get_db) ):
         "title" : new_blog.title,
         "body" : new_blog.body,
     }
+     
+    
+#getting all blogs from database
+@app.get("/blog")
+def get_allBlogs(db : Session = Depends(get_db) ):
+    blogs = db.query(models.Blog).all()
+    return blogs
+    
     
 
-
-
+@app.get("/blog/{id}")
+def get_blog(id : int , db : Session = Depends(get_db)):
+    blog = db.query(models.Blog).filter(models.Blog.id == id).first()
+    return blog
