@@ -1,7 +1,8 @@
-from fastapi import FastAPI,Depends
+from fastapi import FastAPI,Depends,status,HTTPException
 from . import schemas ,models
 from . database import engine ,SessionLocal
 from sqlalchemy.orm import Session
+
  
 app = FastAPI()
 
@@ -16,7 +17,7 @@ def get_db():
         db.close()
     
 
-@app.post("/blog")
+@app.post("/blog" ,status_code= status.HTTP_201_CREATED)  #reponse code should 201 for created
 def create_blog(request : schemas.blog , db : Session = Depends(get_db) ):
     
     new_blog = models.Blog(title = request.title , body = request.body)
@@ -46,7 +47,53 @@ def get_allBlogs(db : Session = Depends(get_db) ):
     
     
 
-@app.get("/blog/{id}")
+@app.get("/blog/{id}",status_code= status.HTTP_200_OK)
 def get_blog(id : int , db : Session = Depends(get_db)):
     blog = db.query(models.Blog).filter(models.Blog.id == id).first()
+    
+    #handeling exceptions
+    if not blog:
+        raise HTTPException(status_code= status.HTTP_404_NOT_FOUND ,
+                            detail= f"Blog with {id} not found !")
     return blog
+
+# deleting a blog
+@app.delete("/blog/{id}", status_code= status.HTTP_204_NO_CONTENT)
+def delete_blog(id : int  , db : Session = Depends(get_db)):
+    blog_to_del= db.query(models.Blog).filter(models.Blog.id == id).first()
+    
+    if not blog_to_del:
+        raise HTTPException(status_code= status.HTTP_404_NOT_FOUND, 
+                            detail= f"Blog with id : {id} not found !")
+    db.delete(blog_to_del)
+    
+    # alternative way:
+    # db.query(models.Blog).filter(models.Blog.id == {id}).delete(synchronize_session= false)
+    
+    db.commit() #saving changes
+    return
+
+# updating ablog with particular id
+@app.put("/blog/{id}" ,status_code= status.HTTP_202_ACCEPTED)
+def update_blog(request : schemas.blog , id : int , db : Session = Depends(get_db),):
+    update_blog = db.query(models.Blog).filter(models.Blog.id == id).first()
+    
+    if not update_blog:
+        raise HTTPException(status_code= status.HTTP_404_NOT_FOUND ,
+                        detail= f"Blog with id : {id} not found !")
+    
+    update_blog.title = request.title
+    update_blog.body = request.body
+    
+    db.commit()
+    db.refresh(update_blog)
+    
+    return {
+        "message" : "Succcessfully Updated",
+        "updated blog title" : update_blog.title,
+        "updated blog body" : update_blog.body,
+    }
+    
+    
+    
+     
