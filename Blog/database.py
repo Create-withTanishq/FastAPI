@@ -10,3 +10,11 @@ engine = create_engine(url= SQLALCHEMY_DATABASE_URL, connect_args= {"check_same_
 SessionLocal = sessionmaker(bind = engine , autoflush= False , autocommit = False)
 
 Base = declarative_base()
+
+#to convert to session format
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
