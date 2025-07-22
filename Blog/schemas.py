@@ -11,3 +11,12 @@ class user(BaseModel):
     email : str
     password : str
     
+    
+# pydantic model for response_model : show_users
+class showUser(BaseModel):
+    name : str
+    email : str
+    class config():
+        orm_mode = True
+        
+    
