@@ -3,9 +3,9 @@ from .. import schemas ,models
 from sqlalchemy.orm import Session
 from ..database import get_db
 
-router = APIRouter()
+router = APIRouter(tags=["blogs"])
 
-@router.post("/blog" ,status_code= status.HTTP_201_CREATED, tags= ["Blog"])  #reponse code should 201 for created
+@router.post("/blog" ,status_code= status.HTTP_201_CREATED, )  #reponse code should 201 for created
 def create_blog(request : schemas.blogBase , db : Session = Depends(get_db) ):
     
     new_blog = models.Blog(title = request.title , body = request.body ,user_id = 1) #for now harcoding user id
@@ -29,14 +29,14 @@ def create_blog(request : schemas.blogBase , db : Session = Depends(get_db) ):
      
     
 #getting all blogs from database
-@router.get("/blog",  tags= ["Blog"])
+@router.get("/blog",  )
 def get_allBlogs(db : Session = Depends(get_db) ):
     blogs = db.query(models.Blog).all()
     return blogs
     
     
 
-@router.get("/blog/{id}",response_model= schemas.showBlogs ,status_code= status.HTTP_200_OK,  tags= ["Blog"])
+@router.get("/blog/{id}",response_model= schemas.showBlogs ,status_code= status.HTTP_200_OK,  )
 def get_blog(id : int , db : Session = Depends(get_db)):
     blog = db.query(models.Blog).filter(models.Blog.id == id).first()
     
@@ -47,7 +47,7 @@ def get_blog(id : int , db : Session = Depends(get_db)):
     return blog
 
 # deleting a blog
-@router.delete("/blog/{id}", status_code= status.HTTP_204_NO_CONTENT , tags= ["Blog"])
+@router.delete("/blog/{id}", status_code= status.HTTP_204_NO_CONTENT , )
 def delete_blog(id : int  , db : Session = Depends(get_db)):
     blog_to_del= db.query(models.Blog).filter(models.Blog.id == id).first()
     
@@ -63,7 +63,7 @@ def delete_blog(id : int  , db : Session = Depends(get_db)):
     return
 
 # updating ablog with particular id
-@router.put("/blog/{id}" ,status_code= status.HTTP_202_ACCEPTED,  tags= ["Blog"])
+@router.put("/blog/{id}" ,status_code= status.HTTP_202_ACCEPTED,  )
 def update_blog(request : schemas.blogBase , id : int , db : Session = Depends(get_db),):
     update_blog = db.query(models.Blog).filter(models.Blog.id == id).first()
     

@@ -33,5 +33,20 @@ class showBlogs(BaseModel):
     class config:
         orm_mode = True
 
-        
+
+# pydantic model for login
+class login(BaseModel):
+    username : str
+    user_email : str
+    password : str
+    
+
+# For JWT token
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+class TokenData(BaseModel):
+    username : str | None = None
+
     
