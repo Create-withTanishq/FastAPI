@@ -1,3 +1,4 @@
 __pycache__
 myvenv
 .Ds_Store
+.env
